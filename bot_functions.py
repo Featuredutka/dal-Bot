@@ -1,16 +1,17 @@
 import urbandictionary as ud
 
-def test():
+def define(word)->list:
+    data = ud.define(word)
+    data.sort(reverse=True, key = rated)
+    data = data[:3]  # Top 3 definitions are used
+    new_data = [str(x.definition) for x in data]  # For convinient representation
+    return new_data
+
+def random_word()->list:
     rand = ud.random()
     x = rand[0]
-    # print(x.word)
-    # print(x.definition)
-    # print(x.example)
     return x
-    # defs = ud.define('netflix and chill')
 
-# rand = ud.random()
-# x = rand[0]
-# print(x.word)
-# print(x.definition)
-# print(x.example)
+def rated(definition)->int:
+    return definition.upvotes
+    
