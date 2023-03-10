@@ -32,12 +32,12 @@ def send_text(message):
         # for x in rand_word:
         #     bot.send_message(message.chat.id, x)
     elif message.text == "/help":
-        bot.send_message(message.chat.id, " ℹ️ List of commands: \n\n <b>/help</b> - exactly what got you here \n <b>/random</b> - fetch a definition for a random word/phrase", parse_mode="HTML")
+        bot.send_message(message.chat.id, " ℹ️ List of commands: \n <b>/help</b> - exactly what got you here \n <b>/random</b> - fetch a definition for a random word/phrase", parse_mode="HTML")
     else:
         definition = btf.define(message.text)
         for x, i in zip(definition, range(len(definition))):
             x = re.sub(r"[\[\]]", "", x)
-            bot.send_message(message.chat.id, f" 🔎 Definition {i+1}: \n {x}", parse_mode="HTML")
+            bot.send_message(message.chat.id, f" 🔎 Definition {i+1}: \n{x}", parse_mode="HTML")
 
 
 
