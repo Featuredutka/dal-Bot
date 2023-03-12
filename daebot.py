@@ -13,11 +13,9 @@ keyboard1 = telebot.types.ReplyKeyboardMarkup(True)
 
 BUF_SIZE = 65536   # 64KB buffer to read images showed better results than 128 or 256
 TABLE_NAME = 'accounts'
-CONNECTION = psycopg2.connect(user="ash",
-                                    password="password",
-                                    host="localhost",
-                                    port="5432",
-                                    database="hashes")
+CONNECTION = psycopg2.connect(user="postgres",
+                                    host="postgres-service.default.svc.cluster.local"
+                             )
 
 
 @bot.message_handler(commands=['start'])
