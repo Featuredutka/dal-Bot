@@ -16,35 +16,24 @@ TABLE_NAME = 'accounts'
 CONNECTION = psycopg2.connect(user="postgres",
                                 password="Sh938052lA",
                                 host="postgres-service.default.svc.cluster.local")
+try:
+    cursor = CONNECTION.cursor()
+except (Exception, psycopg2.Error) as error:
+    print("Error while connecting to PostgreSQL", error)
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, " ❓ Send me a word/phrase to get it's meaning \n\n <b>/help</b> to display options \n\n All definitions provided by <a href='https://www.urbandictionary.com/'>Urban Dictionary</a>", parse_mode="HTML", disable_web_page_preview=True)
-    check = message.chat.id
 
-    # if check not in groups:
-    #     groups.append(check)
-         
-@bot.message_handler(commands=['id'])
-def get_chatid(message):
-    # bot.send_message(message.chat.id, message.chat.id)
-    try:
-        cursor = CONNECTION.cursor()
-        cursor.execute(f"SELECT * FROM {TABLE_NAME} where chat_id like '{message.chat.id}';")
-        record = cursor.fetchone()
+@bot.message_handler(commands=['countdate'])
+def count_messages_on_date(message):
+    pass
 
-        if record:  # Image hash in database means this image was already posted
-            bot.send_message(message.chat.id, record)
-        else:  # No image found - post it and add it's hash to the database
-            # print("No image found")
-            bot.send_message(message.chat.id, "NO DATA FOUND")
-            cursor.execute(f"INSERT INTO {TABLE_NAME} (chat_id) VALUES ('{message.chat.id}');")
-            return 1
-        CONNECTION.commit()
-        
-        # bot.send_message(message.chat.id, message.chat.id)
-    except (Exception, psycopg2.Error) as error:
-        print("Error while connecting to PostgreSQL", error)
+@bot.message_handler(commands=['countchat'])
+def count_messages_in_chat(message):
+    cursor.execute(f"SELECT COUNT(CASE WHEN chat_id = '{message.chat.id}' THEN 1 ELSE null END) FROM accounts;")
+    data = cursor.fetchone()
+    bot.send_message(message.chat.id, "Messages in that chat: "+str(data[0]))
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
@@ -61,17 +50,8 @@ def send_text(message):
         for x, i in zip(definition, range(len(definition))):
             x = re.sub(r"[\[\]]", "", x)
             bot.send_message(message.chat.id, f" 🔎 Definition {i+1}: \n{x}", parse_mode="HTML")
-
-
+    cursor.execute(f"INSERT INTO {TABLE_NAME} (chat_id, msg_text, date) VALUES ({message.chat.id}, '{message.text}', now());")
+    # bot.send_message(message.chat.id, message.text)
+    CONNECTION.commit()
 
 bot.polling()
-
-# with open('json_data.json', 'w') as outfile:
-#     outfile.write(json_string)
-
-
-
-
-# CREATE TABLE accounts (
-# 	chat_id VARCHAR ( 50 ) UNIQUE NOT NULL
-# );
