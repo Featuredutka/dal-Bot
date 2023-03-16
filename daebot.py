@@ -27,7 +27,11 @@ def start_message(message):
 
 @bot.message_handler(commands=['countdate'])
 def count_messages_on_date(message):
-    pass
+    date = datetime.datetime.now()
+    query_date = f"{date.year}-{date.month}-{date.day-1}"
+    cursor.execute(f"SELECT COUNT (CASE WHEN date >= '{query_date}' THEN 1 ELSE null END) FROM {TABLE_NAME};")
+    data = cursor.fetchone()
+    bot.send_message(message.chat.id, "Amount of messages sent in that chat today: "+str(data[0]))
 
 @bot.message_handler(commands=['countchat'])
 def count_messages_in_chat(message):
